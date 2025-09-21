@@ -14,23 +14,23 @@ export function ProgressBar({
   const getVariantStyles = () => {
     switch (variant) {
       case 'achievement':
-        return 'bg-primary';
+        return 'bg-green-600';
       case 'challenge':
         return 'bg-blue-500';
       default:
-        return 'bg-primary';
+        return 'bg-green-600';
     }
   };
 
   return (
-    <div className="space-y-sm">
+    <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium text-foreground">{label}</span>
-        <span className="text-sm text-foreground/70">
+        <span className="text-sm font-medium text-gray-900">{label}</span>
+        <span className="text-sm text-gray-600">
           {progress}/{max}
         </span>
       </div>
-      <div className="w-full bg-muted rounded-full h-2">
+      <div className="w-full bg-gray-200 rounded-full h-2">
         <div 
           className={cn(
             'h-2 rounded-full transition-all duration-300',

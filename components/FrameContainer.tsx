@@ -9,8 +9,8 @@ interface FrameContainerProps {
 
 export function FrameContainer({ children, className }: FrameContainerProps) {
   return (
-    <div className={cn('container min-h-screen py-lg', className)}>
-      <div className="animate-fade-in">
+    <div className={cn('container min-h-screen py-6', className)}>
+      <div className="transition-opacity duration-500 opacity-100">
         {children}
       </div>
     </div>

@@ -33,12 +33,12 @@ export function InputSlider({
   };
 
   return (
-    <div className={cn('space-y-sm', className)}>
+    <div className={cn('space-y-2', className)}>
       <div className="flex justify-between items-center">
-        <label className="text-sm font-medium text-foreground">
+        <label className="text-sm font-medium text-gray-900">
           {label}
         </label>
-        <span className="text-sm text-foreground/70">
+        <span className="text-sm text-gray-600">
           {localValue} {unit}
         </span>
       </div>
@@ -49,7 +49,7 @@ export function InputSlider({
         step={step}
         value={localValue}
         onChange={handleChange}
-        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
+        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
       />
       <style jsx>{`
         .slider::-webkit-slider-thumb {

@@ -72,3 +72,10 @@ export interface ProgressBarProps {
   max: number;
   label: string;
 }
+
+export interface ExtractedData {
+  type: 'transport' | 'food' | 'energy';
+  value: number;
+  unit: string;
+  carbonFootprint: number;
+}
