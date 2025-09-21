@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Send, Bot, User } from 'lucide-react';
+import { ExtractedData } from '@/lib/types';
 
 interface Message {
   id: string;
@@ -12,7 +13,7 @@ interface Message {
 }
 
 interface ChatAgentInterfaceProps {
-  onDataExtracted?: (data: any) => void;
+  onDataExtracted?: (data: ExtractedData) => void;
   className?: string;
 }
 
@@ -75,60 +76,60 @@ export function ChatAgentInterface({ onDataExtracted, className }: ChatAgentInte
 
   return (
     <div className={cn('card h-96 flex flex-col', className)}>
-      <div className="flex items-center gap-sm mb-md pb-sm border-b border-border">
-        <Bot className="w-5 h-5 text-primary" />
+      <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-200">
+        <Bot className="w-5 h-5 text-green-600" />
         <span className="font-medium">EcoTrackr Assistant</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-md mb-md">
+      <div className="flex-1 overflow-y-auto space-y-4 mb-4">
         {messages.map((message) => (
           <div
             key={message.id}
             className={cn(
-              'flex gap-sm',
+              'flex gap-2',
               message.sender === 'user' ? 'justify-end' : 'justify-start'
             )}
           >
             {message.sender === 'agent' && (
-              <Bot className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+              <Bot className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
             )}
             <div
               className={cn(
-                'max-w-[80%] px-sm py-xs rounded-lg text-sm',
+                'max-w-[80%] px-2 py-1 rounded-lg text-sm',
                 message.sender === 'user'
-                  ? 'bg-primary text-white'
-                  : 'bg-muted text-foreground'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-900'
               )}
             >
               {message.content}
             </div>
             {message.sender === 'user' && (
-              <User className="w-6 h-6 text-foreground/60 flex-shrink-0 mt-1" />
+              <User className="w-6 h-6 text-gray-400 flex-shrink-0 mt-1" />
             )}
           </div>
         ))}
         {isLoading && (
-          <div className="flex gap-sm justify-start">
-            <Bot className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-            <div className="bg-muted text-foreground px-sm py-xs rounded-lg text-sm">
+          <div className="flex gap-2 justify-start">
+            <Bot className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+            <div className="bg-gray-100 text-gray-900 px-2 py-1 rounded-lg text-sm">
               <div className="flex gap-1">
-                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
               </div>
             </div>
           </div>
         )}
       </div>
 
-      <div className="flex gap-sm">
+      <div className="flex gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Tell me about your activities..."
-          className="flex-1 px-sm py-xs border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          className="flex-1 px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-200 focus:border-green-600"
           disabled={isLoading}
         />
         <button

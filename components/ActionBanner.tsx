@@ -20,7 +20,7 @@ export function ActionBanner({
       case 'tip':
         return 'bg-yellow-50 border-yellow-200 text-yellow-900';
       default:
-        return 'bg-surface border-border text-foreground';
+        return 'bg-white border-gray-200 text-gray-900';
     }
   };
 
@@ -43,7 +43,7 @@ export function ActionBanner({
       getVariantStyles(),
       action && 'hover:scale-[1.02]'
     )} onClick={action}>
-      <div className="flex items-start gap-sm">
+      <div className="flex items-start gap-2">
         <div className="flex-shrink-0 mt-1">
           {getIcon()}
         </div>

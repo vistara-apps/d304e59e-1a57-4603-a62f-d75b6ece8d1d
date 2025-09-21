@@ -21,18 +21,18 @@ export function ProfileAvatar({
 
   return (
     <div className={cn(
-      'rounded-full bg-primary/10 flex items-center justify-center overflow-hidden',
+      'rounded-full bg-green-100 flex items-center justify-center overflow-hidden',
       sizeClasses,
       className
     )}>
       {src ? (
-        <img 
-          src={src} 
-          alt={alt} 
+        <img
+          src={src}
+          alt={alt}
           className="w-full h-full object-cover"
         />
       ) : (
-        <User className={cn('text-primary', iconSize)} />
+        <User className={cn('text-green-600', iconSize)} />
       )}
     </div>
   );

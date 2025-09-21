@@ -21,9 +21,9 @@ export function MetricCard({
       case 'energy':
         return 'bg-yellow-50 border-yellow-200';
       case 'total':
-        return 'bg-primary/10 border-primary/20';
+        return 'bg-green-50 border-green-200';
       default:
-        return 'bg-surface border-border';
+        return 'bg-white border-gray-200';
     }
   };
 
@@ -47,10 +47,10 @@ export function MetricCard({
       'card border-2 transition-all duration-200 hover:shadow-lg',
       getVariantStyles()
     )}>
-      <div className="flex items-center justify-between mb-sm">
-        <div className="flex items-center gap-sm">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
           <div className="text-xl">{icon}</div>
-          <span className="text-sm font-medium text-foreground/70">
+          <span className="text-sm font-medium text-gray-600">
             {getTypeLabel()}
           </span>
         </div>
@@ -68,13 +68,13 @@ export function MetricCard({
           </div>
         )}
       </div>
-      
+
       <div className="space-y-1">
-        <div className="text-2xl font-bold text-foreground">
+        <div className="text-2xl font-bold text-gray-900">
           {formatCarbonValue(value, unit)}
         </div>
         {type === 'total' && (
-          <div className="text-xs text-foreground/60">
+          <div className="text-xs text-gray-500">
             This week
           </div>
         )}
