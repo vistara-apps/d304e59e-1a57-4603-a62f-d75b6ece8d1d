@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "EcoTrackr",
+    "subtitle": "Built with Zara",
+    "description": "EcoTrackr is a Base Mini App built with Zara.",
+    "iconUrl": "https://0co.to/images/zara-2.png",
+    "homeUrl": "https://d304e59e1a574603a62fd75b6ece8d1d-3ci0.vercel.app",
+    "splashImageUrl": "https://d304e59e1a574603a62fd75b6ece8d1d-3ci0.vercel.app/splash.png",
+    "splashBackgroundColor": "#000000",
+    "heroImageUrl": "https://d304e59e1a574603a62fd75b6ece8d1d-3ci0.vercel.app/image.png",
+    "tagline": "EcoTrackr",
+    "screenshotUrls": [
+      "https://d304e59e1a574603a62fd75b6ece8d1d-3ci0.vercel.app/screenshot.png",
+      "https://d304e59e1a574603a62fd75b6ece8d1d-3ci0.vercel.app/screenshot.png"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "base",
+      "miniapp",
+      "onchainkit"
+    ],
+    "webhookUrl": "https://d304e59e1a574603a62fd75b6ece8d1d-3ci0.vercel.app/api/webhook"
+  }
+}
