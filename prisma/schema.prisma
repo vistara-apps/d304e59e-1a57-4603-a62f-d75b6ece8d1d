@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId            String   @id @unique
+  farcasterUsername String?
+  baseAddress       String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  emissionEntries   EmissionEntry[]
+  userChallenges    UserChallenge[]
+  achievements      Achievement[]
+
+  // Embedded data as JSON strings
+  emissionData      String   @default("{}") // JSON string
+  rewardsPoints     Int      @default(0)
+
+  @@map("users")
+}
+
+model EmissionEntry {
+  entryId                String   @id @unique @default(cuid())
+  userId                 String
+  timestamp              DateTime @default(now())
+  type                   String   // 'transport' | 'food' | 'energy'
+  value                  Float
+  unit                   String
+  calculatedCarbonFootprint Float
+
+  // Relations
+  user                   User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("emission_entries")
+}
+
+model Challenge {
+  challengeId         String   @id @unique @default(cuid())
+  name                String
+  description         String
+  startDate           DateTime
+  endDate             DateTime
+  type                String   // 'transport' | 'food' | 'energy'
+  emissionReductionGoal Float
+
+  // Relations
+  userChallenges      UserChallenge[]
+
+  @@map("challenges")
+}
+
+model UserChallenge {
+  userChallengeId     String   @id @unique @default(cuid())
+  userId              String
+  challengeId         String
+  progress            Float    @default(0)
+  status              String   @default("active") // 'active' | 'completed'
+
+  // Relations
+  user                User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  challenge           Challenge @relation(fields: [challengeId], references: [challengeId], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@map("user_challenges")
+}
+
+model Achievement {
+  id          String   @id @unique @default(cuid())
+  userId      String
+  name        String
+  description String
+  icon        String
+  earnedAt    DateTime @default(now())
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("achievements")
+}

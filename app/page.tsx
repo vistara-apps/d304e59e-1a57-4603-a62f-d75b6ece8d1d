@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useMiniKit } from '@coinbase/minikit';
+import { useAccount } from 'wagmi';
 import { FrameContainer } from '@/components/FrameContainer';
 import { MetricCard } from '@/components/MetricCard';
 import { ActionBanner } from '@/components/ActionBanner';
@@ -10,6 +10,7 @@ import { ProfileAvatar } from '@/components/ProfileAvatar';
 import { ChatAgentInterface } from '@/components/ChatAgentInterface';
 import { EmissionData, Challenge } from '@/lib/types';
 import { SAMPLE_CHALLENGES } from '@/lib/constants';
+import { UserService } from '@/lib/userService';
 import { 
   Car, 
   Utensils, 
@@ -24,25 +25,67 @@ import {
 } from 'lucide-react';
 
 export default function HomePage() {
-  const { user } = useMiniKit();
+  const { address } = useAccount();
   const [emissionData, setEmissionData] = useState<EmissionData>({
-    transport: 201.6,
-    food: 158.2,
-    energy: 95.6,
-    total: 455.4,
+    transport: 0,
+    food: 0,
+    energy: 0,
+    total: 0,
   });
-  const [rewardsPoints, setRewardsPoints] = useState(1250);
+  const [rewardsPoints, setRewardsPoints] = useState(0);
   const [showChat, setShowChat] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleDataExtracted = (data: any) => {
-    // Update emission data based on extracted information
-    setEmissionData(prev => ({
-      ...prev,
-      [data.type]: prev[data.type] + data.carbonFootprint,
-      total: prev.total + data.carbonFootprint,
-    }));
-    setRewardsPoints(prev => prev + 10); // Reward for logging data
+  // Load user data when address is available
+  useEffect(() => {
+    if (address) {
+      loadUserData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [address]);
+
+  const loadUserData = async () => {
+    try {
+      const user = await UserService.getOrCreateUser(address!, undefined, address);
+      const userEmissionData = await UserService.getUserEmissionData(address!);
+      const userPoints = await UserService.getUserPoints(address!);
+
+      setEmissionData(userEmissionData);
+      setRewardsPoints(userPoints);
+    } catch (error) {
+      console.error('Failed to load user data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDataExtracted = async (data: any) => {
+    if (!address) return;
+
+    try {
+      // Add emission entry to database
+      await UserService.addEmissionEntry(
+        address,
+        data.type,
+        data.value,
+        data.unit,
+        data.carbonFootprint
+      );
+
+      // Reload user data to get updated values
+      await loadUserData();
+
+      // Check for new achievements
+      const newAchievements = await UserService.checkAndAwardAchievements(address);
+      if (newAchievements.length > 0) {
+        // Could show a notification here
+        console.log('New achievements earned:', newAchievements);
+      }
+    } catch (error) {
+      console.error('Failed to save emission data:', error);
+    }
   };
 
   const renderHomeTab = () => (
@@ -181,10 +224,37 @@ export default function HomePage() {
     </div>
   );
 
+  if (!address) {
+    return (
+      <FrameContainer>
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-text mb-4">Welcome to EcoTrackr</h2>
+          <p className="text-text/70 mb-6">Connect your wallet to start tracking your carbon footprint</p>
+          <div className="bg-surface rounded-lg p-6">
+            <p className="text-sm text-text/60">Please connect your Base wallet to continue</p>
+          </div>
+        </div>
+      </FrameContainer>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <FrameContainer>
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-text mb-4">Loading your data...</h2>
+          <div className="bg-surface rounded-lg p-6">
+            <p className="text-sm text-text/60">Please wait while we fetch your carbon footprint data</p>
+          </div>
+        </div>
+      </FrameContainer>
+    );
+  }
+
   return (
     <FrameContainer>
       {showChat ? renderChatTab() : renderHomeTab()}
-      
+
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border">
         <div className="container py-sm">
