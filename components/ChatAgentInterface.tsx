@@ -28,6 +28,87 @@ export function ChatAgentInterface({ onDataExtracted, className }: ChatAgentInte
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const extractDataFromMessage = (message: string) => {
+    const lowerMessage = message.toLowerCase();
+
+    // Transport patterns
+    const transportPatterns = [
+      /(\d+(?:\.\d+)?)\s*(km|kilometers?|miles?|mi)/i,
+      /(drove?|drive|car|bus|train|flight|plane|walked?|bike|biked?)\s+(\d+(?:\.\d+)?)\s*(km|kilometers?|miles?|mi)/i,
+    ];
+
+    // Food patterns
+    const foodPatterns = [
+      /(\d+(?:\.\d+)?)\s*(kg|kilograms?|pounds?|lbs?|grams?|g)\s*(beef|chicken|fish|pork|lamb|rice|wheat|vegetables?|fruit)/i,
+      /(ate|eat|consumed?|consumption)\s+(\d+(?:\.\d+)?)\s*(kg|kilograms?|pounds?|lbs?|grams?|g)\s*(beef|chicken|fish|pork|lamb|rice|wheat|vegetables?|fruit)/i,
+    ];
+
+    // Energy patterns
+    const energyPatterns = [
+      /(\d+(?:\.\d+)?)\s*(kwh|kilowatt.?hours?|watt.?hours?|wh)/i,
+      /(used?|consumed?|electricity|power)\s+(\d+(?:\.\d+)?)\s*(kwh|kilowatt.?hours?|watt.?hours?|wh)/i,
+    ];
+
+    // Check transport
+    for (const pattern of transportPatterns) {
+      const match = lowerMessage.match(pattern);
+      if (match) {
+        const value = parseFloat(match[1] || match[2]);
+        const unit = match[2] || match[3];
+        const carbonFootprint = value * 0.21; // Rough estimate: 210g CO2 per km
+        return {
+          type: 'transport' as const,
+          value,
+          unit: unit === 'mi' || unit === 'miles' ? 'miles' : 'km',
+          carbonFootprint,
+        };
+      }
+    }
+
+    // Check food
+    for (const pattern of foodPatterns) {
+      const match = lowerMessage.match(pattern);
+      if (match) {
+        const value = parseFloat(match[1] || match[2]);
+        const unit = match[2] || match[3];
+        const foodType = match[3] || match[4];
+        let carbonFootprint = 0;
+
+        // Rough carbon estimates per kg
+        const foodFactors: Record<string, number> = {
+          beef: 60, lamb: 24, pork: 7, chicken: 6, fish: 5,
+          rice: 2.7, wheat: 1.4, vegetables: 0.5, fruit: 0.3,
+        };
+
+        carbonFootprint = value * (foodFactors[foodType] || 1);
+        return {
+          type: 'food' as const,
+          value,
+          unit: unit === 'g' || unit === 'grams' ? 'g' : 'kg',
+          carbonFootprint,
+        };
+      }
+    }
+
+    // Check energy
+    for (const pattern of energyPatterns) {
+      const match = lowerMessage.match(pattern);
+      if (match) {
+        const value = parseFloat(match[1] || match[2]);
+        const unit = match[2] || match[3];
+        const carbonFootprint = value * 0.4; // Rough estimate: 400g CO2 per kWh
+        return {
+          type: 'energy' as const,
+          value,
+          unit: unit === 'wh' || unit === 'watt hours' ? 'wh' : 'kwh',
+          carbonFootprint,
+        };
+      }
+    }
+
+    return null;
+  };
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -42,26 +123,34 @@ export function ChatAgentInterface({ onDataExtracted, className }: ChatAgentInte
     setInput('');
     setIsLoading(true);
 
+    // Extract data from message
+    const extractedData = extractDataFromMessage(input);
+
     // Simulate AI response
     setTimeout(() => {
+      let responseContent = "Thanks for sharing that information!";
+      let extractedInfo = null;
+
+      if (extractedData) {
+        responseContent = `I've calculated your carbon footprint for ${extractedData.type}: ${extractedData.carbonFootprint.toFixed(2)} kg CO2. Would you like to log anything else?`;
+        extractedInfo = extractedData;
+      } else {
+        responseContent = "I couldn't extract specific data from your message. Try telling me something like 'I drove 15 km today' or 'I ate 200g of beef'. What would you like to track?";
+      }
+
       const agentMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "Thanks for sharing that information! I've calculated your carbon footprint and added it to your tracking. Would you like to log anything else?",
+        content: responseContent,
         sender: 'agent',
         timestamp: new Date(),
       };
-      
+
       setMessages(prev => [...prev, agentMessage]);
       setIsLoading(false);
 
-      // Extract mock data
-      if (onDataExtracted) {
-        onDataExtracted({
-          type: 'transport',
-          value: 15,
-          unit: 'km',
-          carbonFootprint: 3.15,
-        });
+      // Extract data if found
+      if (extractedInfo && onDataExtracted) {
+        onDataExtracted(extractedInfo);
       }
     }, 1500);
   };
