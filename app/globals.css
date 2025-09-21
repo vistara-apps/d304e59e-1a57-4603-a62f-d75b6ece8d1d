@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-2xl px-4 mx-auto;
+  }
+  
+  .card {
+    @apply bg-surface rounded-lg shadow-card p-md;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-white px-md py-sm rounded-md font-medium hover:opacity-90 transition-opacity duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-muted text-foreground px-md py-sm rounded-md font-medium hover:bg-opacity-80 transition-all duration-200;
+  }
+}
